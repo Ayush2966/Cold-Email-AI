@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  name      String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  oauthToken OAuthToken?
+  drafts     EmailDraft[]
+}
+
+model OAuthToken {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   @unique @db.ObjectId
+  user         User     @relation(fields: [userId], references: [id])
+  refreshToken String
+  accessToken  String?
+  expiresAt    DateTime?
+  scope        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model EmailDraft {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
+  user          User     @relation(fields: [userId], references: [id])
+  positionTitle String
+  subject       String
+  body          String
+  createdAt     DateTime @default(now())
+
+  sendLogs SendLog[]
+}
+
+model SendLog {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  draftId        String     @db.ObjectId
+  draft          EmailDraft @relation(fields: [draftId], references: [id])
+  recipientEmail String
+  status         String
+  errorMessage   String?
+  sentAt         DateTime?
+  createdAt      DateTime   @default(now())
+}
