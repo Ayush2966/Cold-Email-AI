@@ -10,6 +10,8 @@ import sendRoutes from "./routes/send.js";
 import historyRoutes from "./routes/history.js";
 
 const app = express();
+// Render (and similar) terminate TLS and set X-Forwarded-For; required for express-rate-limit + req.ip
+app.set("trust proxy", 1);
 const port = Number(process.env.PORT) || 4000;
 
 const origins = (process.env.CORS_ORIGIN || "http://localhost:5173")
