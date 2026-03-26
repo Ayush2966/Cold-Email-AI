@@ -1,9 +1,11 @@
 export function RoleDocumentsStep({
   hint,
   positionTitle,
+  companyName,
   resumeFile,
   jdFile,
   onPositionTitleChange,
+  onCompanyNameChange,
   onResumeFileChange,
   onJdFileChange,
   onBack,
@@ -26,6 +28,15 @@ export function RoleDocumentsStep({
         />
       </label>
       <label className="block text-sm font-medium">
+        Company name
+        <input
+          className="mt-1 w-full rounded-lg border border-black/10 bg-white px-3 py-2 outline-none ring-accent/30 focus:ring-2"
+          value={companyName}
+          onChange={(e) => onCompanyNameChange(e.target.value)}
+          placeholder="e.g. Figma"
+        />
+      </label>
+      <label className="block text-sm font-medium">
         Resume (PDF)
         <input
           type="file"
@@ -35,7 +46,7 @@ export function RoleDocumentsStep({
         />
       </label>
       <label className="block text-sm font-medium">
-        Job description (PDF)
+        Job description (PDF, optional)
         <input
           type="file"
           accept="application/pdf"
@@ -50,7 +61,7 @@ export function RoleDocumentsStep({
         <button
           type="button"
           onClick={onNext}
-          disabled={!positionTitle || !resumeFile || !jdFile}
+          disabled={!positionTitle || !resumeFile}
           className="flex-1 rounded-xl bg-ink py-3 text-sm font-semibold text-white disabled:opacity-50"
         >
           Next
