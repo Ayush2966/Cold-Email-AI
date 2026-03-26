@@ -1,5 +1,5 @@
-# Cold Email Generator
+# Cold Email AI
 
 Generate and manage cold outreach emails.
-# COLD-EMAIL-GENERATOR
-# HUEHUE
+# COLD-EMAIL-Ai
+
