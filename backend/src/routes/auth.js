@@ -10,27 +10,42 @@ router.post("/register", async (req, res) => {
   if (!email || !name) {
     return res.status(400).json({ error: "email and name are required" });
   }
-  const user = await prisma.user.upsert({
-    where: { email: String(email).trim() },
-    update: { name: String(name).trim(), phone: phone ? String(phone).trim() : null },
-    create: {
-      email: String(email).trim(),
-      name: String(name).trim(),
-      phone: phone ? String(phone).trim() : null,
-    },
-  });
-  const token = signToken({ sub: user.id, email: user.email });
-  res.json({ token, user: { id: user.id, email: user.email, name: user.name, phone: user.phone } });
+  try {
+    const user = await prisma.user.upsert({
+      where: { email: String(email).trim() },
+      update: { name: String(name).trim(), phone: phone ? String(phone).trim() : null },
+      create: {
+        email: String(email).trim(),
+        name: String(name).trim(),
+        phone: phone ? String(phone).trim() : null,
+      },
+    });
+    const token = signToken({ sub: user.id, email: user.email });
+    res.json({ token, user: { id: user.id, email: user.email, name: user.name, phone: user.phone } });
+  } catch (err) {
+    console.error("register", err);
+    const code = err.code;
+    const unreachable = code === "P1001" || /Can't reach database|ECONNREFUSED|ETIMEDOUT/i.test(String(err.message));
+    res.status(unreachable ? 503 : 500).json({
+      error: err.message || "Registration failed",
+      code: code || undefined,
+    });
+  }
 });
 
 router.get("/me", authRequired, async (req, res) => {
-  const user = await prisma.user.findUnique({ where: { id: req.user.sub } });
-  if (!user) return res.status(404).json({ error: "User not found" });
-  const tokenRow = await prisma.oAuthToken.findUnique({ where: { userId: user.id } });
-  res.json({
-    user: { id: user.id, email: user.email, name: user.name, phone: user.phone },
-    gmailConnected: Boolean(tokenRow?.refreshToken),
-  });
+  try {
+    const user = await prisma.user.findUnique({ where: { id: req.user.sub } });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    const tokenRow = await prisma.oAuthToken.findUnique({ where: { userId: user.id } });
+    res.json({
+      user: { id: user.id, email: user.email, name: user.name, phone: user.phone },
+      gmailConnected: Boolean(tokenRow?.refreshToken),
+    });
+  } catch (err) {
+    console.error("me", err);
+    res.status(500).json({ error: err.message || "Failed to load profile" });
+  }
 });
 
 router.get("/google/url", authRequired, (req, res) => {
