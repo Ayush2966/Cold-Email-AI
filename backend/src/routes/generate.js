@@ -13,6 +13,8 @@ router.post("/", authRequired, uploadResumeAndJd, async (req, res) => {
       senderEmail,
       phone,
       positionTitle,
+      companyName,
+      wordLimit,
       jdText,
       resumeText,
     } = req.body || {};
@@ -29,16 +31,14 @@ router.post("/", authRequired, uploadResumeAndJd, async (req, res) => {
     if (!resumeFile?.buffer?.length && !resumeText) {
       return res.status(400).json({ error: "Provide a resume PDF or resumeText" });
     }
-    if (!jdFile?.buffer?.length && !jdText) {
-      return res.status(400).json({ error: "Provide a job description PDF or jdText" });
-    }
-
     const result = await generateColdEmail({
       apiKey: process.env.GEMINI_API_KEY,
       senderName: String(senderName),
       senderEmail: String(senderEmail),
       phone: phone ? String(phone) : "",
       positionTitle: String(positionTitle),
+      companyName: companyName ? String(companyName) : "",
+      wordLimit: Number(wordLimit) || 180,
       jdPdfBuffer: jdFile?.buffer,
       resumePdfBuffer: resumeFile?.buffer,
       jdTextFallback: jdText ? String(jdText) : "",

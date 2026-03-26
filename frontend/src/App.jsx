@@ -36,6 +36,10 @@ export default function App() {
     setPhone,
     positionTitle,
     setPositionTitle,
+    companyName,
+    setCompanyName,
+    wordLimit,
+    setWordLimit,
     resumeFile,
     setResumeFile,
     jdFile,
@@ -95,8 +99,8 @@ export default function App() {
   }
 
   async function handleGenerate() {
-    if (!resumeFile || !jdFile) {
-      setError("Upload both resume and job description PDFs.");
+    if (!resumeFile) {
+      setError("Upload your resume PDF.");
       return;
     }
     setError("");
@@ -106,8 +110,12 @@ export default function App() {
     fd.append("senderEmail", email);
     fd.append("phone", phone);
     fd.append("positionTitle", positionTitle);
+    fd.append("companyName", companyName);
+    fd.append("wordLimit", wordLimit);
     fd.append("resume", resumeFile);
-    fd.append("jobDescription", jdFile);
+    if (jdFile) {
+      fd.append("jobDescription", jdFile);
+    }
     try {
       const out = await generateEmail(token, fd);
       setSubject(out.subject);
@@ -212,9 +220,11 @@ export default function App() {
         <RoleDocumentsStep
           hint={STEPS[1].hint}
           positionTitle={positionTitle}
+          companyName={companyName}
           resumeFile={resumeFile}
           jdFile={jdFile}
           onPositionTitleChange={setPositionTitle}
+          onCompanyNameChange={setCompanyName}
           onResumeFileChange={setResumeFile}
           onJdFileChange={setJdFile}
           onBack={() => setStep(1)}
@@ -226,6 +236,8 @@ export default function App() {
       return (
         <GenerateStep
           isGenerating={isGenerating}
+          wordLimit={wordLimit}
+          onWordLimitChange={setWordLimit}
           onGenerate={handleGenerate}
           onBackToUploads={() => setStep(2)}
         />

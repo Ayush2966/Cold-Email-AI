@@ -28,6 +28,8 @@ function getInitialWizardState() {
       email: "",
       phone: "",
       positionTitle: "",
+      companyName: "",
+      wordLimit: "180",
       subject: "",
       body: "",
       recipientsRaw: "",
@@ -42,6 +44,8 @@ function getInitialWizardState() {
     email: wizard.email ?? "",
     phone: wizard.phone ?? "",
     positionTitle: wizard.positionTitle ?? "",
+    companyName: wizard.companyName ?? "",
+    wordLimit: wizard.wordLimit ?? "180",
     subject: wizard.subject ?? "",
     body: wizard.body ?? "",
     recipientsRaw: wizard.recipientsRaw ?? "",
@@ -57,6 +61,8 @@ export function useWizardState(token = "") {
   const [email, setEmail] = useState(initial.email);
   const [phone, setPhone] = useState(initial.phone);
   const [positionTitle, setPositionTitle] = useState(initial.positionTitle);
+  const [companyName, setCompanyName] = useState(initial.companyName);
+  const [wordLimit, setWordLimit] = useState(initial.wordLimit);
   const [resumeFile, setResumeFile] = useState(null);
   const [jdFile, setJdFile] = useState(null);
   const [subject, setSubject] = useState(initial.subject);
@@ -84,12 +90,14 @@ export function useWizardState(token = "") {
       email,
       phone,
       positionTitle,
+      companyName,
+      wordLimit,
       subject,
       body,
       recipientsRaw,
       attachResume,
     }),
-    [step, name, email, phone, positionTitle, subject, body, recipientsRaw, attachResume]
+    [step, name, email, phone, positionTitle, companyName, wordLimit, subject, body, recipientsRaw, attachResume]
   );
 
   useEffect(() => {
@@ -120,6 +128,10 @@ export function useWizardState(token = "") {
     setPhone,
     positionTitle,
     setPositionTitle,
+    companyName,
+    setCompanyName,
+    wordLimit,
+    setWordLimit,
     resumeFile,
     setResumeFile,
     jdFile,
